@@ -763,4 +763,34 @@ footer .dev-credit a {
 footer .dev-credit a:hover {
   color: #fff;
 }
+/* === Footer Signature === */
+footer p.signature {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+/* === Logo Glow === */
+.logo {
+  text-shadow: 0 0 8px rgba(0, 123, 255, 0.7);
+  transition: text-shadow 0.3s ease;
+}
+.logo:hover {
+  text-shadow: 0 0 15px rgba(0, 123, 255, 1);
+}
+
+/* === Button Hover Glow === */
+button:hover {
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
+}
+
+/* === Page Fade-in Animation === */
+body {
+  animation: fadeInSmooth 1s ease-in;
+}
+@keyframes fadeInSmooth {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 

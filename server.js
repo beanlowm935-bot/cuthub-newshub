@@ -1,3 +1,4 @@
+require("dotenv").config();
 // ====== server.js ======
 const express = require("express");
 const path = require("path");
@@ -47,8 +48,13 @@ app.post("/api/contact", (req, res) => {
 
 // ===== Password-Protected Admin Page =====
 app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "login.html")); // Serve login page
+  const { password } = req.query;
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).send("<h2>Access Denied</h2><p>Incorrect password.</p>");
+  }
+  res.sendFile(path.join(__dirname, "admin.html"));
 });
+
 
 app.post("/admin/login", (req, res) => {
   const { password } = req.body;
