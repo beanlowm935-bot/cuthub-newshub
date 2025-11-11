@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login – CUT NewsHub</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <section class="admin-login">
+    <h2>Admin Login</h2>
+    <form id="loginForm">
+      <input type="password" id="password" placeholder="Enter Admin Password" required />
+      <button type="submit">Login</button>
+      <p id="error" style="color:red;display:none;">Incorrect password!</p>
+    </form>
+  </section>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = '/admin';
+      } else {
+        document.getElementById('error').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
