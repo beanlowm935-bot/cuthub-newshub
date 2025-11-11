@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<!-- === Splash Screen === -->
+<div id="splash-screen">
+  <div class="splash-bg"></div>
+  <div class="splash-logo">
+    <div class="logo-circle">
+      <div class="circle-glow"></div>
+      <div class="circle-core"></div>
+    </div>
+    <h1>CUT<span>NewsHub</span></h1>
+    <p>Loading updates...</p>
+  </div>
+</div>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>University News</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== Loading / Splash ===== -->
+  <div id="loadingOverlay" aria-hidden="false">
+    <div class="loader">
+      <div class="ring"></div>
+      <div class="logo">CUT NewsHub</div>
+    </div>
+  </div>
+
+  <header class="reveal">
+    <nav>
+      <div class="nav-left">
+        <h1 class="logo">CUT NewsHub</h1>
+        <ul class="nav-links">
+  <li><a href="index.html" class="active">Home</a></li>
+  <li><a href="about.html">About</a></li>
+  <li><a href="services.html">Services</a></li>
+  <li><a href="news.html">News</a></li>
+  <li><a href="contact.html">Contact</a></li>
+</ul>
+
+      </div>
+
+      <div class="nav-right">
+        <!-- Live search -->
+        <div class="nav-search">
+          <input id="nav-search-input" type="search" placeholder="Search news, cards..." aria-label="Search site" />
+          <button id="voiceBtn" title="Voice command">🎙️</button>
+        </div>
+
+        <button id="darkModeToggle" class="dark-toggle" aria-pressed="false">🌙</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===== Hero with particle canvas ===== -->
+  <section class="hero reveal" id="hero">
+    <canvas id="heroCanvas" aria-hidden="true"></canvas>
+    <div class="hero-text">
+      <h2>Welcome to your one stop for all campus updates on CHINHOYI UNIVERSITY OF TECHNOLOGY</h2>
+      <p>News hub, get updates and current affairs on University News.</p>
+      <button id="learn-more" onclick="location.href='/news'">Get News</button>
+    </div>
+  </section>
+
+  <!-- ===== Auto-rotating Carousel (featured items) ===== -->
+  <section class="carousel-section reveal" aria-label="Featured news">
+    <div class="carousel" id="carousel">
+      <div class="slide active">
+        <h3>Welcome Week Highlights</h3>
+        <p>Opening events, orientation guide and campus tours.</p>
+      </div>
+      <div class="slide">
+        <h3>Exam Timetable Released</h3>
+        <p>Check your program timetable and exam regulations.</p>
+      </div>
+      <div class="slide">
+        <h3>Student Council Elections</h3>
+        <p>Meet the candidates and polling locations.</p>
+      </div>
+      <div class="carousel-controls">
+        <button id="prevSlide" aria-label="Previous">◀</button>
+        <button id="nextSlide" aria-label="Next">▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Cards (searchable) ===== -->
+  <section class="cards reveal" id="cardsContainer">
+    <div class="card reveal" data-keywords="fast performance speed">
+      <h3>Fast</h3>
+      <p>Lightning-fast and smooth navigation.</p>
+    </div>
+    <div class="card reveal" data-keywords="accurate facts true verified">
+      <h3>Accurate</h3>
+      <p>No rumors posted here, just real news.</p>
+    </div>
+    <div class="card reveal" data-keywords="updates timetable exams elections campus">
+      <h3>Updates</h3>
+      <p>Latest updates on campus news, timetables, examinations, elections and more....</p>
+    </div>
+  </section>
+
+  <!-- === Contact Section === -->
+  <section class="contact-section reveal" aria-label="Contact us">
+    <h2>Contact Us</h2>
+    <form id="contactForm" aria-label="Contact form">
+      <input type="text" id="name" placeholder="Your Name" required />
+      <input type="email" id="email" placeholder="Your Email" required />
+      <textarea id="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+    <p id="responseMsg" role="status" aria-live="polite"></p>
+  </section>
+
+  <footer class="reveal">
+    <footer>
+  <p>&copy; 2025 CUT NewsHub. All rights reserved.</p>
+  <p class="dev-credit">Created by <strong>Tafara Mavhunga</strong> | <a href="mailto:tafaram935@gmail.com">Contact Developer</a></p>
+</footer>
+
+    <p>&copy; 2025 CUT NewsHub. All rights reserved.</p>
+  </footer>
+
+  <!-- Floating chat widget (front-end demo only) -->
+  <div id="chatWidget" aria-hidden="true">
+    <button id="chatOpen" class="chatToggle" aria-label="Open assistant">💬</button>
+    <div id="chatPanel" class="chatPanel" role="dialog" aria-modal="false" aria-hidden="true">
+      <div class="chatHeader">
+        <strong>Campus Assistant</strong>
+        <button id="chatClose" aria-label="Close">✖</button>
+      </div>
+      <div id="chatBody" class="chatBody" role="log" aria-live="polite"></div>
+      <form id="chatForm" class="chatForm">
+        <input id="chatInput" placeholder="Ask something or type 'help'..." autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scroll to top -->
+  <button id="scrollTopBtn" aria-label="Scroll to top">⬆</button>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

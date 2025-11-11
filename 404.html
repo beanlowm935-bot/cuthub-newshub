@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 – Page Not Found | CUT NewsHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ===== 404 Page ===== */
+    body {
+      background: radial-gradient(circle at top, #007bff, #001f3f);
+      color: #fff;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    .error-container {
+      text-align: center;
+      animation: floatUp 2s ease forwards;
+    }
+
+    .error-container h1 {
+      font-size: 8rem;
+      background: linear-gradient(90deg, #00bcd4, #007bff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    .error-container h2 {
+      font-size: 2rem;
+      margin-top: -1rem;
+      color: #cfe8ff;
+      animation: fadeUp 1.5s ease forwards;
+    }
+
+    .error-container p {
+      color: #dce9ff;
+      margin-top: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .home-btn {
+      margin-top: 2rem;
+      background: linear-gradient(90deg, #00bcd4, #007bff);
+      color: #fff;
+      padding: 0.9rem 2rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 20px rgba(0, 123, 255, 0.4);
+    }
+
+    .home-btn:hover {
+      transform: scale(1.08);
+      background: linear-gradient(90deg, #007bff, #00bcd4);
+      box-shadow: 0 0 30px rgba(0, 188, 212, 0.6);
+    }
+
+    @keyframes pulseGlow {
+      from { text-shadow: 0 0 10px #00bcd4; }
+      to { text-shadow: 0 0 30px #00bcd4; }
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <h1>404</h1>
+    <h2>Page Not Found</h2>
+    <p>Oops! Looks like this page has vanished into cyberspace.</p>
+    <button class="home-btn" onclick="window.location.href='OG.html'">
+      Return Home
+    </button>
+  </div>
+</body>
+</html>

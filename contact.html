@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact – CUT NewsHub</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <h1 class="logo">CUT NewsHub</h1>
+      <ul class="nav-links">
+        <li><a href="/OG">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/news">News</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <button id="theme-toggle">🌗</button>
+    </nav>
+  </header>
+
+  <section class="contact-hero">
+    <h2>Contact Us</h2>
+    <p>We’d love to hear from you — questions, feedback, or collaboration ideas.</p>
+  </section>
+
+  <section class="contact-container">
+    <div class="contact-info">
+      <h3>Get in Touch</h3>
+      <p><strong>Email:</strong> support@cutnewshub.ac.zw</p>
+      <p><strong>Phone:</strong> +263 71 462 1733</p>
+      <p><strong>Address:</strong> Chinhoyi University of Technology, CUT Campus</p>
+      <div class="socials">
+        <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook"></a>
+        <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter"></a>
+        <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"></a>
+      </div>
+    </div>
+
+    <form id="contactForm" class="contact-form">
+      <input type="text" id="name" placeholder="Your Name" required />
+      <input type="email" id="email" placeholder="Your Email" required />
+      <textarea id="message" placeholder="Your Message" required></textarea>
+      <button type="submit" class="send-btn">Send Message</button>
+      <p id="responseMsg" style="margin-top: 10px;"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 CUT NewsHub. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.getElementById("contactForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const responseMsg = document.getElementById("responseMsg");
+
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          responseMsg.textContent = "✅ Message sent successfully!";
+          responseMsg.style.color = "green";
+          e.target.reset();
+        } else {
+          responseMsg.textContent = "⚠️ " + data.error;
+          responseMsg.style.color = "red";
+        }
+      } catch (err) {
+        console.error(err);
+        responseMsg.textContent = "❌ Failed to send message.";
+        responseMsg.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login – CUT NewsHub</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #0a192f, #0f3057);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-box {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 40px 50px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(0, 180, 255, 0.3);
+      text-align: center;
+      width: 300px;
+    }
+
+    h2 {
+      color: #00b4ff;
+      margin-bottom: 20px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    button {
+      background: #00b4ff;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #008fd6;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 15px;
+      color: #88a;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Admin Login</h2>
+    <form action="/admin/login" method="POST">
+      <input type="password" name="password" placeholder="Enter password" required />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+  <footer>© 2025 CUT NewsHub — Created by <strong>Tafara Mavhunga</strong></footer>
+</body>
+</html>

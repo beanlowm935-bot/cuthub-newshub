@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – CUT NewsHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #0a192f, #0f3057);
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: rgba(0, 40, 80, 0.9);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 20px rgba(0, 150, 255, 0.4);
+    }
+
+    header h1 {
+      color: #00b4ff;
+      font-weight: 700;
+    }
+
+    .refresh {
+      background: #00b4ff;
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .refresh:hover {
+      background: #008fd6;
+    }
+
+    main {
+      padding: 30px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background: rgba(0, 180, 255, 0.2);
+      color: #00b4ff;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    button.action {
+      background: #00b4ff;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.3s;
+    }
+
+    button.action:hover {
+      background: #008fd6;
+    }
+
+    .status {
+      color: #00ffb7;
+      font-weight: 500;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 10px;
+      font-size: 14px;
+      color: #88a;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+    <button class="refresh" onclick="fetchMessages()">🔄 Refresh</button>
+  </header>
+
+  <main>
+    <h2>Contact Messages</h2>
+    <table id="messagesTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Message</th>
+          <th>Timestamp</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="messageBody">
+        <tr><td colspan="5">Loading messages...</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <footer>
+    <p>Created by <strong>Tafara Mavhunga</strong> — CUT NewsHub © 2025</p>
+  </footer>
+
+  <script>
+    async function fetchMessages() {
+      try {
+        const res = await fetch("/api/messages");
+        const messages = await res.json();
+        const tableBody = document.getElementById("messageBody");
+        tableBody.innerHTML = "";
+
+        if (!messages.length) {
+          tableBody.innerHTML = "<tr><td colspan='5'>No messages yet.</td></tr>";
+          return;
+        }
+
+        messages.forEach((msg, i) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${msg.name}</td>
+            <td>${msg.email}</td>
+            <td>${msg.message}</td>
+            <td>${new Date(msg.timestamp).toLocaleString()}</td>
+            <td>
+              <button class="action" onclick="deleteMessage(${i})">🗑 Delete</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+      }
+    }
+
+    async function deleteMessage(index) {
+      if (!confirm("Are you sure you want to delete this message?")) return;
+      await fetch(`/api/messages/${index}`, { method: "DELETE" });
+      fetchMessages();
+    }
+
+    // Auto-refresh every 10 seconds
+    setInterval(fetchMessages, 10000);
+    fetchMessages();
+  </script>
+</body>
+</html>
