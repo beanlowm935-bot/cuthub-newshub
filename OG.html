@@ -1,27 +1,28 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<!-- === Splash Screen === -->
-<div id="splash-screen">
-  <div class="splash-bg"></div>
-  <div class="splash-logo">
-    <div class="logo-circle">
-      <div class="circle-glow"></div>
-      <div class="circle-core"></div>
-    </div>
-    <h1>CUT<span>NewsHub</span></h1>
-    <p>Loading updates...</p>
-  </div>
-</div>
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CUT NewsHub – Home</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="logo.png">
+  <!-- ✅ Add favicon -->
+  <link rel="icon" type="image/png" href="logo.png" />
 </head>
+
 <body>
+  <!-- === Splash Screen === -->
+  <div id="splash-screen">
+    <div class="splash-bg"></div>
+    <div class="splash-logo">
+      <div class="logo-circle">
+        <div class="circle-glow"></div>
+        <div class="circle-core"></div>
+      </div>
+      <h1>CUT<span>NewsHub</span></h1>
+      <p>Loading updates...</p>
+    </div>
+  </div>
+
   <!-- ===== Loading / Splash ===== -->
   <div id="loadingOverlay" aria-hidden="false">
     <div class="loader">
@@ -35,14 +36,14 @@
       <div class="nav-left">
         <h1 class="logo">CUT NewsHub</h1>
         <ul class="nav-links">
-  <li><a href="index.html" class="active">Home</a></li>
-  <li><a href="about.html">About</a></li>
-  <li><a href="services.html">Services</a></li>
-  <li><a href="news.html">News</a></li>
-  <li><a href="contact.html">Contact</a></li>
-<p><a href="/admin" style="color: #00aaff; text-decoration: none;">Admin Dashboard</a></p>
-</ul>
-
+          <li><a href="/OG" class="active">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/news">News</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <!-- ✅ Admin dashboard link -->
+          <li><a href="/admin" style="color: #00aaff; text-decoration: none;">Admin Dashboard</a></li>
+        </ul>
       </div>
 
       <div class="nav-right">
@@ -57,7 +58,7 @@
     </nav>
   </header>
 
-  <!-- ===== Hero with particle canvas ===== -->
+  <!-- ===== Hero Section ===== -->
   <section class="hero reveal" id="hero">
     <canvas id="heroCanvas" aria-hidden="true"></canvas>
     <div class="hero-text">
@@ -67,7 +68,7 @@
     </div>
   </section>
 
-  <!-- ===== Auto-rotating Carousel (featured items) ===== -->
+  <!-- ===== Carousel ===== -->
   <section class="carousel-section reveal" aria-label="Featured news">
     <div class="carousel" id="carousel">
       <div class="slide active">
@@ -89,7 +90,7 @@
     </div>
   </section>
 
-  <!-- ===== Cards (searchable) ===== -->
+  <!-- ===== Info Cards ===== -->
   <section class="cards reveal" id="cardsContainer">
     <div class="card reveal" data-keywords="fast performance speed">
       <h3>Fast</h3>
@@ -117,17 +118,13 @@
     <p id="responseMsg" role="status" aria-live="polite"></p>
   </section>
 
+  <!-- ===== Footer ===== -->
   <footer class="reveal">
-    <footer>
-  <p>&copy; 2025 CUT NewsHub. All rights reserved.</p>
-  <p class="signature">Created by <strong>Tafara Mavhunga</strong> | <a href="mailto:beanlowm935@gmail.com">Contact Developer</a></p>
-</footer>
-</footer>
-
     <p>&copy; 2025 CUT NewsHub. All rights reserved.</p>
+    <p class="signature">Created by <strong>Tafara Mavhunga</strong> | <a href="mailto:beanlowm935@gmail.com">Contact Developer</a></p>
   </footer>
 
-  <!-- Floating chat widget (front-end demo only) -->
+  <!-- ===== Floating Chat Widget ===== -->
   <div id="chatWidget" aria-hidden="true">
     <button id="chatOpen" class="chatToggle" aria-label="Open assistant">💬</button>
     <div id="chatPanel" class="chatPanel" role="dialog" aria-modal="false" aria-hidden="true">
@@ -143,10 +140,9 @@
     </div>
   </div>
 
-  <!-- Scroll to top -->
+  <!-- ===== Scroll to top ===== -->
   <button id="scrollTopBtn" aria-label="Scroll to top">⬆</button>
 
   <script src="script.js" defer></script>
-
 </body>
 </html>
