@@ -1,7 +1,5 @@
-/* ===== script.js - Consolidated & Fixed ===== */
-
+/* ===== CUT NewsHub - Optimized script.js ===== */
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize features
   initLoading();
   initDarkMode();
   initRevealObserver();
@@ -14,35 +12,31 @@ document.addEventListener("DOMContentLoaded", () => {
   initContactForm();
   initMobileMenu();
   initFuturisticCursor();
+  enableTouchCarousel();
 });
 
-/* ================= Loading Overlay / Splash ================= */
+/* ================= Loading / Splash ================= */
 function initLoading() {
   const overlay = document.getElementById("loadingOverlay");
   const splash = document.getElementById("splash-screen");
 
-  // Remove overlay after a short delay
   if (overlay) {
     setTimeout(() => {
       overlay.style.opacity = "0";
       overlay.style.pointerEvents = "none";
-      overlay.setAttribute("aria-hidden", "true");
       setTimeout(() => overlay.remove?.(), 600);
     }, 900);
   }
 
-  // Splash fade-out
   if (splash) {
     setTimeout(() => {
       splash.style.opacity = "0";
-      setTimeout(() => {
-        splash.style.display = "none";
-      }, 800);
+      setTimeout(() => (splash.style.display = "none"), 800);
     }, 4000);
   }
 }
 
-/* ================= Dark Mode (persisted) ================= */
+/* ================= Dark Mode ================= */
 function initDarkMode() {
   const toggle = document.getElementById("darkModeToggle");
   const saved = localStorage.getItem("theme");
@@ -53,109 +47,80 @@ function initDarkMode() {
       toggle.setAttribute("aria-pressed", "true");
     }
   }
-
   if (!toggle) return;
   toggle.addEventListener("click", () => {
     document.body.classList.toggle("dark");
     const isDark = document.body.classList.contains("dark");
     toggle.textContent = isDark ? "☀️" : "🌙";
-    toggle.setAttribute("aria-pressed", String(isDark));
     localStorage.setItem("theme", isDark ? "dark" : "light");
   });
 }
 
-/* ================= Reveal on scroll (IntersectionObserver) ================= */
+/* ================= Reveal Animations ================= */
 function initRevealObserver() {
-  const revs = document.querySelectorAll(".reveal");
-  if (!revs.length) return;
+  const elements = document.querySelectorAll(".reveal");
+  if (!elements.length) return;
   const obs = new IntersectionObserver(
-    (entries, o) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add("active");
-          // stagger child cards
-          const cards = e.target.querySelectorAll(".card");
-          if (cards.length) {
-            cards.forEach((c, idx) => setTimeout(() => c.classList.add("revealed"), idx * 150));
-          }
-          o.unobserve(e.target);
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+          const cards = entry.target.querySelectorAll(".card");
+          cards.forEach((c, i) => setTimeout(() => c.classList.add("revealed"), i * 150));
+          observer.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.12 }
+    { threshold: 0.15 }
   );
-  revs.forEach((r) => obs.observe(r));
+  elements.forEach((el) => obs.observe(el));
 }
 
-/* ================= Live Search (nav) ================= */
+/* ================= Search ================= */
 function initSearch() {
   const input = document.getElementById("nav-search-input");
   if (!input) return;
-  const cards = Array.from(document.querySelectorAll(".card"));
-  const slides = Array.from(document.querySelectorAll(".slide"));
+  const items = document.querySelectorAll(".card, .slide");
   input.addEventListener("input", (e) => {
-    const q = e.target.value.trim().toLowerCase();
-    cards.forEach((c) => {
-      const text = (c.textContent + " " + (c.dataset.keywords || "")).toLowerCase();
-      c.style.display = !q || text.includes(q) ? "" : "none";
-    });
-    slides.forEach((s) => {
-      const text = (s.textContent || "").toLowerCase();
-      s.style.display = !q || text.includes(q) ? "" : "none";
+    const q = e.target.value.toLowerCase();
+    items.forEach((el) => {
+      el.style.display = !q || el.textContent.toLowerCase().includes(q) ? "" : "none";
     });
   });
 }
 
-/* ================= Carousel (auto + manual) ================= */
+/* ================= Carousel ================= */
 function initCarousel() {
-  const slides = Array.from(document.querySelectorAll(".slide"));
-  const prevBtn = document.getElementById("prevSlide");
-  const nextBtn = document.getElementById("nextSlide");
+  const slides = document.querySelectorAll(".slide");
+  const prev = document.getElementById("prevSlide");
+  const next = document.getElementById("nextSlide");
   if (!slides.length) return;
 
-  let current = 0;
-  let autoInterval = null;
+  let index = 0, interval;
 
-  function show(index) {
-    slides.forEach((s, i) => s.classList.toggle("active", i === index));
-  }
+  const show = (i) => slides.forEach((s, n) => s.classList.toggle("active", n === i));
+  const nextSlide = () => show((index = (index + 1) % slides.length));
+  const prevSlide = () => show((index = (index - 1 + slides.length) % slides.length));
 
-  function next() {
-    current = (current + 1) % slides.length;
-    show(current);
-  }
-  function prev() {
-    current = (current - 1 + slides.length) % slides.length;
-    show(current);
-  }
-  function startAuto() {
-    stopAuto();
-    autoInterval = setInterval(next, 5000);
-  }
-  function stopAuto() {
-    if (autoInterval) clearInterval(autoInterval);
-  }
-  // Buttons
-  if (nextBtn) nextBtn.addEventListener("click", () => { next(); startAuto(); });
-  if (prevBtn) prevBtn.addEventListener("click", () => { prev(); startAuto(); });
+  const startAuto = () => (interval = setInterval(nextSlide, 5000));
+  const resetAuto = () => { clearInterval(interval); startAuto(); };
 
-  // Init
-  show(current);
+  next?.addEventListener("click", () => { nextSlide(); resetAuto(); });
+  prev?.addEventListener("click", () => { prevSlide(); resetAuto(); });
+
+  show(index);
   startAuto();
-
-  // Pause auto when page hidden
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stopAuto();
-    else startAuto();
-  });
+  document.addEventListener("visibilitychange", () => document.hidden ? clearInterval(interval) : startAuto());
 }
 
-/* ================= Hero Particles (lightweight) ================= */
+/* ================= Hero Particles ================= */
 function initParticles() {
   const canvas = document.getElementById("heroCanvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
+  const max = 40;
+  let particles = [];
 
   function resize() {
     canvas.width = canvas.clientWidth * dpr;
@@ -163,47 +128,35 @@ function initParticles() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  let particles = [];
-  const max = 40;
-
-  function make() {
-    particles = [];
-    for (let i = 0; i < max; i++) {
-      particles.push({
-        x: Math.random() * canvas.clientWidth,
-        y: Math.random() * canvas.clientHeight,
-        r: 0.6 + Math.random() * 2.2,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        alpha: 0.2 + Math.random() * 0.6,
-      });
-    }
+  function create() {
+    particles = Array.from({ length: max }, () => ({
+      x: Math.random() * canvas.clientWidth,
+      y: Math.random() * canvas.clientHeight,
+      r: 0.6 + Math.random() * 2.2,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      alpha: 0.2 + Math.random() * 0.6,
+    }));
   }
-
-  resize();
-  make();
-  window.addEventListener("resize", () => { ctx.setTransform(1, 0, 0, 1, 0, 0); resize(); make(); });
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const p of particles) {
+    particles.forEach((p) => {
       ctx.beginPath();
       ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < -10) p.x = canvas.clientWidth + 10;
-      if (p.x > canvas.clientWidth + 10) p.x = -10;
-      if (p.y < -10) p.y = canvas.clientHeight + 10;
-      if (p.y > canvas.clientHeight + 10) p.y = -10;
-    }
+      p.x = (p.x + p.vx + canvas.clientWidth + 20) % (canvas.clientWidth + 20);
+      p.y = (p.y + p.vy + canvas.clientHeight + 20) % (canvas.clientHeight + 20);
+    });
     requestAnimationFrame(draw);
   }
-  draw();
+
+  resize(); create(); draw();
+  window.addEventListener("resize", () => { resize(); create(); });
 }
 
-/* ================= Chat widget (front-end only) ================= */
+/* ================= Chat Widget ================= */
 function initChatWidget() {
   const open = document.getElementById("chatOpen");
   const panel = document.getElementById("chatPanel");
@@ -213,100 +166,52 @@ function initChatWidget() {
   const input = document.getElementById("chatInput");
   if (!open || !panel || !close || !form || !body || !input) return;
 
-  open.addEventListener("click", () => {
-    panel.setAttribute("aria-hidden", "false");
-    panel.style.display = "flex";
-    document.getElementById("chatWidget")?.setAttribute("aria-hidden", "false");
-  });
-  close.addEventListener("click", () => {
-    panel.setAttribute("aria-hidden", "true");
-    panel.style.display = "none";
-  });
+  const pushMessage = (who, text) => {
+    const msg = document.createElement("div");
+    msg.className = "msg";
+    msg.innerHTML = `<strong>${who}:</strong> <span>${text}</span>`;
+    body.appendChild(msg);
+    body.scrollTop = body.scrollHeight;
+  };
+
+  open.addEventListener("click", () => (panel.style.display = "flex"));
+  close.addEventListener("click", () => (panel.style.display = "none"));
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const txt = input.value.trim();
     if (!txt) return;
     pushMessage("You", txt);
     input.value = "";
-    setTimeout(() => pushMessage("Assistant", `Thanks — I heard: "${txt}". (Demo reply)`), 700);
+    setTimeout(() => pushMessage("Assistant", `You said: "${txt}"`), 700);
   });
-
-  function pushMessage(who, text) {
-    const el = document.createElement("div");
-    el.className = "msg";
-    el.innerHTML = `<strong>${who}:</strong> <span>${escapeHtml(text)}</span>`;
-    body.appendChild(el);
-    body.scrollTop = body.scrollHeight;
-  }
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  }
 
   panel.style.display = "none";
 }
 
-/* ================= Voice Commands (Web Speech API) ================= */
+/* ================= Voice Commands ================= */
 function initVoice() {
-  const voiceBtn = document.getElementById("voiceBtn");
-  if (!voiceBtn) return;
-  if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
-    voiceBtn.style.display = "none";
-    return;
-  }
+  const btn = document.getElementById("voiceBtn");
+  if (!btn || !("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) return;
+
   const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
   const r = new Rec();
   r.lang = "en-US";
-  r.interimResults = false;
-  r.maxAlternatives = 1;
 
-  voiceBtn.addEventListener("click", () => {
-    r.start();
-    voiceBtn.textContent = "🎧";
-  });
-
+  btn.addEventListener("click", () => { r.start(); btn.textContent = "🎧"; });
   r.onresult = (e) => {
-    const txt = e.results[0][0].transcript.toLowerCase().trim();
-    voiceBtn.textContent = "🎙️";
-    handleVoiceCommand(txt);
-  };
-  r.onerror = () => (voiceBtn.textContent = "🎙️");
-
-  function handleVoiceCommand(txt) {
-    if (txt.includes("dark")) {
-      document.getElementById("darkModeToggle")?.click();
-      return;
-    }
-    if (txt.includes("get news") || txt.includes("news")) {
-      document.getElementById("learn-more")?.click();
-      return;
-    }
-    if (txt.startsWith("search ")) {
+    const txt = e.results[0][0].transcript.toLowerCase();
+    btn.textContent = "🎙️";
+    if (txt.includes("dark")) document.getElementById("darkModeToggle")?.click();
+    else if (txt.includes("top")) window.scrollTo({ top: 0, behavior: "smooth" });
+    else if (txt.startsWith("search ")) {
       const q = txt.replace("search ", "");
       const input = document.getElementById("nav-search-input");
-      if (input) {
-        input.value = q;
-        input.dispatchEvent(new Event("input"));
-      }
-      return;
+      if (input) input.value = q, input.dispatchEvent(new Event("input"));
     }
-    if (txt.includes("top") || txt.includes("scroll up")) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    // fallback: show recognized text in chat
-    const chatOpen = document.getElementById("chatOpen");
-    if (chatOpen) chatOpen.click();
-    setTimeout(() => {
-      const chatInput = document.getElementById("chatInput");
-      if (chatInput) {
-        chatInput.value = txt;
-        document.getElementById("chatForm")?.dispatchEvent(new Event("submit", { cancelable: true }));
-      }
-    }, 300);
-  }
+  };
 }
 
-/* ================= Scroll to top logic ================= */
+/* ================= Scroll To Top ================= */
 function initScrollTop() {
   const btn = document.getElementById("scrollTopBtn");
   if (!btn) return;
@@ -314,7 +219,7 @@ function initScrollTop() {
   btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
 
-/* ================= Contact form (connects to backend) ================= */
+/* ================= Contact Form ================= */
 function initContactForm() {
   const form = document.getElementById("contactForm");
   const resp = document.getElementById("responseMsg");
@@ -322,172 +227,81 @@ function initContactForm() {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    resp && (resp.textContent = "Sending...");
-    const name = document.getElementById("name")?.value.trim();
-    const email = document.getElementById("email")?.value.trim();
-    const message = document.getElementById("message")?.value.trim();
-
-    if (!name || !email || !message) {
-      resp && (resp.textContent = "Please fill all fields.");
+    const data = {
+      name: form.name?.value.trim(),
+      email: form.email?.value.trim(),
+      message: form.message?.value.trim(),
+    };
+    if (!data.name || !data.email || !data.message) {
+      resp.textContent = "Please fill all fields.";
       return;
     }
 
+    resp.textContent = "Sending...";
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify(data),
       });
-      const data = await res.json();
-      if (data.success) {
-        resp && (resp.style.color = "green");
-        resp && (resp.textContent = "✅ Message sent successfully!");
-        form.reset();
-      } else {
-        resp && (resp.style.color = "red");
-        resp && (resp.textContent = "⚠️ " + (data.error || "Failed to send message."));
-      }
-    } catch (err) {
-      console.error("Contact error:", err);
-      resp && (resp.style.color = "red");
-      resp && (resp.textContent = "❌ Could not send message. Try again.");
+      const out = await res.json();
+      resp.textContent = out.success ? "✅ Message sent!" : "❌ Failed to send message.";
+      resp.style.color = out.success ? "green" : "red";
+      if (out.success) form.reset();
+    } catch {
+      resp.textContent = "❌ Network error.";
+      resp.style.color = "red";
     }
   });
 }
 
-/* ================= Reveal cards older fallback (keeps behavior) ================= */
-function initCardRevealFallback() {
-  const cards = Array.from(document.querySelectorAll(".card"));
-  if (!cards.length) return;
-  const revealOnScroll = () => {
-    const triggerBottom = window.innerHeight * 0.85;
-    cards.forEach((card) => {
-      const cardTop = card.getBoundingClientRect().top;
-      if (cardTop < triggerBottom) card.classList.add("visible");
-    });
-  };
-  window.addEventListener("scroll", revealOnScroll);
-  revealOnScroll();
-}
-initCardRevealFallback();
-
-/* ================= Mobile menu (with animation) ================= */
+/* ================= Mobile Menu ================= */
 function initMobileMenu() {
-  const menuToggle = document.getElementById("menu-toggle");
-  const navLinks = document.getElementById("nav-links");
-  if (!menuToggle || !navLinks) return;
-
-  menuToggle.addEventListener("click", () => {
-    navLinks.classList.toggle("active");
-    menuToggle.textContent = navLinks.classList.contains("active") ? "✖" : "☰";
+  const toggle = document.getElementById("menu-toggle");
+  const nav = document.getElementById("nav-links");
+  if (!toggle || !nav) return;
+  toggle.addEventListener("click", () => {
+    nav.classList.toggle("active");
+    toggle.textContent = nav.classList.contains("active") ? "✖" : "☰";
+    document.body.style.overflow = nav.classList.contains("active") ? "hidden" : "";
   });
-
-  navLinks.querySelectorAll("a").forEach((link) =>
-    link.addEventListener("click", () => {
-      navLinks.classList.remove("active");
-      menuToggle.textContent = "☰";
-    })
-  );
+  nav.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => {
+    nav.classList.remove("active");
+    toggle.textContent = "☰";
+  }));
 }
 
-/* ================= Futuristic cursor (only on desktop) ================= */
+/* ================= Futuristic Cursor ================= */
 function initFuturisticCursor() {
-  // Only apply on non-touch devices
   if ("ontouchstart" in window) return;
   const cursor = document.createElement("div");
-  cursor.className = "futuristic-cursor";
-  // styles via JS so no CSS edits needed (you can move to stylesheet if desired)
   Object.assign(cursor.style, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    width: "25px",
-    height: "25px",
-    borderRadius: "50%",
-    pointerEvents: "none",
-    background: "radial-gradient(circle, rgba(0,225,255,0.7), transparent 70%)",
-    boxShadow: "0 0 30px rgba(0,225,255,0.4)",
-    zIndex: "9999",
-    transition: "transform 0.08s ease-out",
+    position: "fixed", width: "25px", height: "25px", borderRadius: "50%",
+    pointerEvents: "none", background: "radial-gradient(circle, rgba(0,225,255,0.7), transparent 70%)",
+    boxShadow: "0 0 30px rgba(0,225,255,0.4)", zIndex: "9999", transition: "transform 0.08s ease-out",
   });
   document.body.appendChild(cursor);
 
-  let lastX = 0,
-    lastY = 0,
-    lastMove = Date.now();
-
   window.addEventListener("mousemove", (e) => {
-    const now = Date.now();
-    const speed = Math.min(1, (now - lastMove) / 50);
-    lastMove = now;
-
-    const x = e.clientX;
-    const y = e.clientY;
-    const dx = x - lastX;
-    const dy = y - lastY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    cursor.style.transform = `translate(${x - 12}px, ${y - 12}px) scale(${1 + distance / 150})`;
-    cursor.style.boxShadow = `0 0 ${15 + distance / 3}px rgba(0,225,255,0.6)`;
-    cursor.style.background = `radial-gradient(circle, rgba(0,225,255,${0.5 + distance / 200}), transparent 70%)`;
-
-    lastX = x;
-    lastY = y;
+    cursor.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`;
   });
 }
-// ===== Responsive Hamburger Menu Toggle =====
-const hamburger = document.getElementById('hamburger');
-const navLinks = document.querySelector('.nav-links');
 
-if (hamburger && navLinks) {
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navLinks.classList.toggle('active');
-  });
-}
-// ===== Responsive Hamburger Menu Toggle (Frosted Glass) =====
-const hamburger = document.getElementById('hamburger');
-const navLinks = document.querySelector('.nav-links');
+/* ================= Touch Swipe (Carousel) ================= */
+function enableTouchCarousel() {
+  const carousel = document.querySelector(".carousel");
+  const slides = document.querySelectorAll(".slide");
+  if (!carousel || !slides.length) return;
 
-if (hamburger && navLinks) {
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navLinks.classList.toggle('active');
-
-    // Optional blur effect for body when menu is open
-    document.body.style.overflow = hamburger.classList.contains('active') ? 'hidden' : '';
-  });
-}
-/* ===== Touch Swipe Support for Carousel (Mobile Friendly) ===== */
-(function enableTouchCarousel() {
-  const carousel = document.querySelector('.carousel');
-  const slides = document.querySelectorAll('.slide');
-  if (!carousel || slides.length === 0) return;
-
-  let startX = 0;
-  let endX = 0;
-  const swipeThreshold = 50; // minimum distance to trigger a slide
-
-  carousel.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
-  });
-
-  carousel.addEventListener('touchmove', e => {
-    endX = e.touches[0].clientX;
-  });
-
-  carousel.addEventListener('touchend', () => {
+  let startX = 0, endX = 0;
+  carousel.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX));
+  carousel.addEventListener("touchmove", (e) => (endX = e.touches[0].clientX));
+  carousel.addEventListener("touchend", () => {
     const diff = endX - startX;
-    if (Math.abs(diff) > swipeThreshold) {
-      if (diff > 0) {
-        // swipe right → previous slide
-        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-      } else {
-        // swipe left → next slide
-        currentSlide = (currentSlide + 1) % slides.length;
-      }
-      showSlide(currentSlide);
-      resetAutoSlide();
-    }
+    if (Math.abs(diff) < 50) return;
+    const next = diff < 0;
+    const active = [...slides].findIndex((s) => s.classList.contains("active"));
+    const newIndex = next ? (active + 1) % slides.length : (active - 1 + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle("active", i === newIndex));
   });
-})();
+}
