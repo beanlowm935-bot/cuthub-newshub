@@ -1,11 +1,7 @@
-/* === Default Theme: Light Blue === */
-document.addEventListener("DOMContentLoaded", () => {
-  document.body.classList.remove("dark-mode");
-  localStorage.setItem("theme", "light");
-});
+/* ===== script.js - Consolidated & Fixed ===== */
 
-/* ================= INIT ON DOM READY ================= */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize features
   initLoading();
   initDarkMode();
   initRevealObserver();
@@ -15,137 +11,192 @@ document.addEventListener('DOMContentLoaded', () => {
   initChatWidget();
   initVoice();
   initScrollTop();
-  initContactForm(); // keeps previous placeholder behavior or will connect to backend later
+  initContactForm();
+  initMobileMenu();
+  initFuturisticCursor();
 });
 
-/* ================= Loading Overlay ================= */
-function initLoading(){
-  const overlay = document.getElementById('loadingOverlay');
-  // Keep splash for a short time to show effect
-  setTimeout(()=> {
-    overlay.style.opacity = '0';
-    overlay.style.pointerEvents = 'none';
-    overlay.setAttribute('aria-hidden','true');
-    setTimeout(()=> overlay.remove(), 600);
-  }, 900);
+/* ================= Loading Overlay / Splash ================= */
+function initLoading() {
+  const overlay = document.getElementById("loadingOverlay");
+  const splash = document.getElementById("splash-screen");
+
+  // Remove overlay after a short delay
+  if (overlay) {
+    setTimeout(() => {
+      overlay.style.opacity = "0";
+      overlay.style.pointerEvents = "none";
+      overlay.setAttribute("aria-hidden", "true");
+      setTimeout(() => overlay.remove?.(), 600);
+    }, 900);
+  }
+
+  // Splash fade-out
+  if (splash) {
+    setTimeout(() => {
+      splash.style.opacity = "0";
+      setTimeout(() => {
+        splash.style.display = "none";
+      }, 800);
+    }, 4000);
+  }
 }
 
 /* ================= Dark Mode (persisted) ================= */
-function initDarkMode(){
-  const toggle = document.getElementById('darkModeToggle');
-  const saved = localStorage.getItem('theme');
-  if(saved === 'dark'){ document.body.classList.add('dark'); toggle.textContent='☀️'; toggle.setAttribute('aria-pressed','true'); }
-  toggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    const isDark = document.body.classList.contains('dark');
-    toggle.textContent = isDark ? '☀️' : '🌙';
-    toggle.setAttribute('aria-pressed', String(isDark));
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+function initDarkMode() {
+  const toggle = document.getElementById("darkModeToggle");
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark") {
+    document.body.classList.add("dark");
+    if (toggle) {
+      toggle.textContent = "☀️";
+      toggle.setAttribute("aria-pressed", "true");
+    }
+  }
+
+  if (!toggle) return;
+  toggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    toggle.textContent = isDark ? "☀️" : "🌙";
+    toggle.setAttribute("aria-pressed", String(isDark));
+    localStorage.setItem("theme", isDark ? "dark" : "light");
   });
 }
 
 /* ================= Reveal on scroll (IntersectionObserver) ================= */
-function initRevealObserver(){
-  const revs = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver((entries, o) => {
-    entries.forEach((e, i) => {
-      if(e.isIntersecting){
-        e.target.classList.add('active');
-        // if element contains child cards, stagger small delay
-        const cards = e.target.querySelectorAll('.card');
-        if(cards.length){
-          cards.forEach((c, idx)=> setTimeout(()=> c.classList.add('revealed'), idx*150));
+function initRevealObserver() {
+  const revs = document.querySelectorAll(".reveal");
+  if (!revs.length) return;
+  const obs = new IntersectionObserver(
+    (entries, o) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("active");
+          // stagger child cards
+          const cards = e.target.querySelectorAll(".card");
+          if (cards.length) {
+            cards.forEach((c, idx) => setTimeout(() => c.classList.add("revealed"), idx * 150));
+          }
+          o.unobserve(e.target);
         }
-        o.unobserve(e.target);
-      }
-    });
-  }, {threshold:0.12});
-  revs.forEach(r=> obs.observe(r));
+      });
+    },
+    { threshold: 0.12 }
+  );
+  revs.forEach((r) => obs.observe(r));
 }
 
 /* ================= Live Search (nav) ================= */
-function initSearch(){
-  const input = document.getElementById('nav-search-input');
-  const cards = Array.from(document.querySelectorAll('.card'));
-  const slides = Array.from(document.querySelectorAll('.slide'));
-  input.addEventListener('input', e => {
+function initSearch() {
+  const input = document.getElementById("nav-search-input");
+  if (!input) return;
+  const cards = Array.from(document.querySelectorAll(".card"));
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  input.addEventListener("input", (e) => {
     const q = e.target.value.trim().toLowerCase();
-    // filter cards
-    cards.forEach(c => {
-      const text = (c.textContent + ' ' + (c.dataset.keywords||'')).toLowerCase();
-      c.style.display = (!q || text.includes(q)) ? '' : 'none';
+    cards.forEach((c) => {
+      const text = (c.textContent + " " + (c.dataset.keywords || "")).toLowerCase();
+      c.style.display = !q || text.includes(q) ? "" : "none";
     });
-    // highlight slides that match
-    slides.forEach(s => {
-      const text = (s.textContent || '').toLowerCase();
-      s.style.display = (!q || text.includes(q)) ? '' : 'none';
+    slides.forEach((s) => {
+      const text = (s.textContent || "").toLowerCase();
+      s.style.display = !q || text.includes(q) ? "" : "none";
     });
   });
 }
 
-/* ================= Carousel (auto + controls) ================= */
-function initCarousel(){
-  const slides = Array.from(document.querySelectorAll('.slide'));
-  if(!slides.length) return;
-  let idx = 0;
-  const show = i => {
-    slides.forEach(s=> s.classList.remove('active'));
-    if(slides[i]) slides[i].classList.add('active');
-  };
-  show(idx);
-  const next = ()=> { idx = (idx+1)%slides.length; show(idx); };
-  const prev = ()=> { idx = (idx-1+slides.length)%slides.length; show(idx); };
-  let timer = setInterval(next, 4500);
-  document.getElementById('nextSlide').addEventListener('click', ()=> { next(); reset(); });
-  document.getElementById('prevSlide').addEventListener('click', ()=> { prev(); reset(); });
-  function reset(){ clearInterval(timer); timer = setInterval(next, 4500); }
+/* ================= Carousel (auto + manual) ================= */
+function initCarousel() {
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const prevBtn = document.getElementById("prevSlide");
+  const nextBtn = document.getElementById("nextSlide");
+  if (!slides.length) return;
+
+  let current = 0;
+  let autoInterval = null;
+
+  function show(index) {
+    slides.forEach((s, i) => s.classList.toggle("active", i === index));
+  }
+
+  function next() {
+    current = (current + 1) % slides.length;
+    show(current);
+  }
+  function prev() {
+    current = (current - 1 + slides.length) % slides.length;
+    show(current);
+  }
+  function startAuto() {
+    stopAuto();
+    autoInterval = setInterval(next, 5000);
+  }
+  function stopAuto() {
+    if (autoInterval) clearInterval(autoInterval);
+  }
+  // Buttons
+  if (nextBtn) nextBtn.addEventListener("click", () => { next(); startAuto(); });
+  if (prevBtn) prevBtn.addEventListener("click", () => { prev(); startAuto(); });
+
+  // Init
+  show(current);
+  startAuto();
+
+  // Pause auto when page hidden
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopAuto();
+    else startAuto();
+  });
 }
 
 /* ================= Hero Particles (lightweight) ================= */
-function initParticles(){
-  const canvas = document.getElementById('heroCanvas');
-  if(!canvas) return;
+function initParticles() {
+  const canvas = document.getElementById("heroCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
-  const resize = ()=> {
+
+  function resize() {
     canvas.width = canvas.clientWidth * dpr;
     canvas.height = canvas.clientHeight * dpr;
-    ctx.scale(dpr, dpr);
-  };
-  canvas.style.width = '100%';
-  canvas.style.height = '100%';
-  const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
   let particles = [];
   const max = 40;
 
-  function make(){
+  function make() {
     particles = [];
-    for(let i=0;i<max;i++){
+    for (let i = 0; i < max; i++) {
       particles.push({
-        x: Math.random()*canvas.clientWidth,
-        y: Math.random()*canvas.clientHeight,
-        r: 0.6 + Math.random()*2.2,
-        vx: (Math.random()-0.5)*0.4,
-        vy: (Math.random()-0.5)*0.4,
-        alpha: 0.2 + Math.random()*0.6
+        x: Math.random() * canvas.clientWidth,
+        y: Math.random() * canvas.clientHeight,
+        r: 0.6 + Math.random() * 2.2,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        alpha: 0.2 + Math.random() * 0.6,
       });
     }
   }
+
   resize();
   make();
-  window.addEventListener('resize', ()=> { ctx.setTransform(1,0,0,1,0,0); resize(); make(); });
+  window.addEventListener("resize", () => { ctx.setTransform(1, 0, 0, 1, 0, 0); resize(); make(); });
 
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    for(const p of particles){
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of particles) {
       ctx.beginPath();
       ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
-      p.x += p.vx; p.y += p.vy;
-      if(p.x < -10) p.x = canvas.clientWidth + 10;
-      if(p.x > canvas.clientWidth + 10) p.x = -10;
-      if(p.y < -10) p.y = canvas.clientHeight + 10;
-      if(p.y > canvas.clientHeight + 10) p.y = -10;
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < -10) p.x = canvas.clientWidth + 10;
+      if (p.x > canvas.clientWidth + 10) p.x = -10;
+      if (p.y < -10) p.y = canvas.clientHeight + 10;
+      if (p.y > canvas.clientHeight + 10) p.y = -10;
     }
     requestAnimationFrame(draw);
   }
@@ -153,222 +204,234 @@ function initParticles(){
 }
 
 /* ================= Chat widget (front-end only) ================= */
-function initChatWidget(){
-  const open = document.getElementById('chatOpen');
-  const panel = document.getElementById('chatPanel');
-  const close = document.getElementById('chatClose');
-  const body = document.getElementById('chatBody');
-  const form = document.getElementById('chatForm');
-  const input = document.getElementById('chatInput');
+function initChatWidget() {
+  const open = document.getElementById("chatOpen");
+  const panel = document.getElementById("chatPanel");
+  const close = document.getElementById("chatClose");
+  const body = document.getElementById("chatBody");
+  const form = document.getElementById("chatForm");
+  const input = document.getElementById("chatInput");
+  if (!open || !panel || !close || !form || !body || !input) return;
 
-  open.addEventListener('click', ()=> {
-    panel.setAttribute('aria-hidden','false'); panel.style.display='flex';
-    document.getElementById('chatWidget').setAttribute('aria-hidden','false');
+  open.addEventListener("click", () => {
+    panel.setAttribute("aria-hidden", "false");
+    panel.style.display = "flex";
+    document.getElementById("chatWidget")?.setAttribute("aria-hidden", "false");
   });
-  close.addEventListener('click', ()=> {
-    panel.setAttribute('aria-hidden','true'); panel.style.display='none';
+  close.addEventListener("click", () => {
+    panel.setAttribute("aria-hidden", "true");
+    panel.style.display = "none";
   });
-  form.addEventListener('submit', e => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
     const txt = input.value.trim();
-    if(!txt) return;
-    pushMessage('You', txt);
-    input.value='';
-    // simple canned reply (simulate AI)
-    setTimeout(()=> pushMessage('Assistant', `Thanks — I heard: "${txt}". (Demo reply)`), 700);
+    if (!txt) return;
+    pushMessage("You", txt);
+    input.value = "";
+    setTimeout(() => pushMessage("Assistant", `Thanks — I heard: "${txt}". (Demo reply)`), 700);
   });
 
-  function pushMessage(who, text){
-    const el = document.createElement('div');
-    el.className = 'msg';
+  function pushMessage(who, text) {
+    const el = document.createElement("div");
+    el.className = "msg";
     el.innerHTML = `<strong>${who}:</strong> <span>${escapeHtml(text)}</span>`;
     body.appendChild(el);
     body.scrollTop = body.scrollHeight;
   }
-  function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
 
-  // hide panel by default
-  panel.style.display='none';
+  panel.style.display = "none";
 }
 
 /* ================= Voice Commands (Web Speech API) ================= */
-function initVoice(){
-  const voiceBtn = document.getElementById('voiceBtn');
-  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    voiceBtn.style.display='none';
+function initVoice() {
+  const voiceBtn = document.getElementById("voiceBtn");
+  if (!voiceBtn) return;
+  if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+    voiceBtn.style.display = "none";
     return;
   }
   const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
   const r = new Rec();
-  r.lang = 'en-US';
+  r.lang = "en-US";
   r.interimResults = false;
   r.maxAlternatives = 1;
 
-  voiceBtn.addEventListener('click', ()=> {
+  voiceBtn.addEventListener("click", () => {
     r.start();
-    voiceBtn.textContent = '🎧';
+    voiceBtn.textContent = "🎧";
   });
 
   r.onresult = (e) => {
     const txt = e.results[0][0].transcript.toLowerCase().trim();
-    voiceBtn.textContent = '🎙️';
+    voiceBtn.textContent = "🎙️";
     handleVoiceCommand(txt);
   };
-  r.onerror = ()=> voiceBtn.textContent = '🎙️';
+  r.onerror = () => (voiceBtn.textContent = "🎙️");
 
-  function handleVoiceCommand(txt){
-    // commands: dark mode, get news, search <term>, top
-    if(txt.includes('dark')) {
-      document.getElementById('darkModeToggle').click();
+  function handleVoiceCommand(txt) {
+    if (txt.includes("dark")) {
+      document.getElementById("darkModeToggle")?.click();
       return;
     }
-    if(txt.includes('get news') || txt.includes('news')) {
-      document.getElementById('learn-more').click();
+    if (txt.includes("get news") || txt.includes("news")) {
+      document.getElementById("learn-more")?.click();
       return;
     }
-    if(txt.startsWith('search ')) {
-      const q = txt.replace('search ','');
-      const input = document.getElementById('nav-search-input');
-      input.value = q; input.dispatchEvent(new Event('input'));
+    if (txt.startsWith("search ")) {
+      const q = txt.replace("search ", "");
+      const input = document.getElementById("nav-search-input");
+      if (input) {
+        input.value = q;
+        input.dispatchEvent(new Event("input"));
+      }
       return;
     }
-    if(txt.includes('top') || txt.includes('scroll up')) {
-      window.scrollTo({top:0,behavior:'smooth'}); return;
+    if (txt.includes("top") || txt.includes("scroll up")) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
     }
-    // fallback: show recognized text in chat stub
-    const chatOpen = document.getElementById('chatOpen'); chatOpen.click();
-    setTimeout(()=> {
-      document.getElementById('chatInput').value = txt;
-      document.getElementById('chatForm').dispatchEvent(new Event('submit',{cancelable:true}));
+    // fallback: show recognized text in chat
+    const chatOpen = document.getElementById("chatOpen");
+    if (chatOpen) chatOpen.click();
+    setTimeout(() => {
+      const chatInput = document.getElementById("chatInput");
+      if (chatInput) {
+        chatInput.value = txt;
+        document.getElementById("chatForm")?.dispatchEvent(new Event("submit", { cancelable: true }));
+      }
     }, 300);
   }
 }
 
 /* ================= Scroll to top logic ================= */
-function initScrollTop(){
-  const btn = document.getElementById('scrollTopBtn');
-  window.addEventListener('scroll', ()=> btn.style.display = window.scrollY > 200 ? 'block' : 'none');
-  btn.addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}));
+function initScrollTop() {
+  const btn = document.getElementById("scrollTopBtn");
+  if (!btn) return;
+  window.addEventListener("scroll", () => (btn.style.display = window.scrollY > 200 ? "block" : "none"));
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
 
-/* ================= Contact form placeholder handler ================= */
-function initContactForm(){
-  const form = document.getElementById('contactForm');
-  const resp = document.getElementById('responseMsg');
-  form.addEventListener('submit', e => {
+/* ================= Contact form (connects to backend) ================= */
+function initContactForm() {
+  const form = document.getElementById("contactForm");
+  const resp = document.getElementById("responseMsg");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    resp.textContent = 'Sending...';
-    const name = document.getElementById('name').value.trim();
-    setTimeout(()=> {
-      resp.textContent = `✅ Thanks ${name || ''}, we received your message (demo).`;
-      form.reset();
-    }, 900);
-  });
-}
-// Reveal cards when they scroll into view
-const cards = document.querySelectorAll('.card');
+    resp && (resp.textContent = "Sending...");
+    const name = document.getElementById("name")?.value.trim();
+    const email = document.getElementById("email")?.value.trim();
+    const message = document.getElementById("message")?.value.trim();
 
-const revealOnScroll = () => {
-  const triggerBottom = window.innerHeight * 0.85;
+    if (!name || !email || !message) {
+      resp && (resp.textContent = "Please fill all fields.");
+      return;
+    }
 
-  cards.forEach(card => {
-    const cardTop = card.getBoundingClientRect().top;
-    if (cardTop < triggerBottom) {
-      card.classList.add('visible');
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        resp && (resp.style.color = "green");
+        resp && (resp.textContent = "✅ Message sent successfully!");
+        form.reset();
+      } else {
+        resp && (resp.style.color = "red");
+        resp && (resp.textContent = "⚠️ " + (data.error || "Failed to send message."));
+      }
+    } catch (err) {
+      console.error("Contact error:", err);
+      resp && (resp.style.color = "red");
+      resp && (resp.textContent = "❌ Could not send message. Try again.");
     }
   });
-};
-
-window.addEventListener('scroll', revealOnScroll);
-revealOnScroll();
-
-// Dark mode toggle
-const toggleBtn = document.createElement('button');
-toggleBtn.id = 'toggle-dark';
-toggleBtn.innerText = '☾ Dark Mode';
-document.querySelector('nav').appendChild(toggleBtn);
-
-// Apply saved mode
-if (localStorage.getItem('theme') === 'dark') {
-  document.body.classList.add('dark-mode');
-  toggleBtn.innerText = '☀ Light Mode';
 }
 
-// Toggle on click
-toggleBtn.addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
-  const isDark = document.body.classList.contains('dark-mode');
-  toggleBtn.innerText = isDark ? '☀ Light Mode' : '☾ Dark Mode';
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-});
-/* === Futuristic Glowing Cursor Effect === */
-const cursor = document.createElement('div');
-cursor.style.position = 'fixed';
-cursor.style.top = '0';
-cursor.style.left = '0';
-cursor.style.width = '25px';
-cursor.style.height = '25px';
-cursor.style.borderRadius = '50%';
-cursor.style.pointerEvents = 'none';
-cursor.style.background = 'radial-gradient(circle, rgba(0,225,255,0.7), transparent 70%)';
-cursor.style.boxShadow = '0 0 30px rgba(0,225,255,0.4)';
-cursor.style.zIndex = '9999';
-cursor.style.transition = 'transform 0.08s ease-out';
-document.body.appendChild(cursor);
+/* ================= Reveal cards older fallback (keeps behavior) ================= */
+function initCardRevealFallback() {
+  const cards = Array.from(document.querySelectorAll(".card"));
+  if (!cards.length) return;
+  const revealOnScroll = () => {
+    const triggerBottom = window.innerHeight * 0.85;
+    cards.forEach((card) => {
+      const cardTop = card.getBoundingClientRect().top;
+      if (cardTop < triggerBottom) card.classList.add("visible");
+    });
+  };
+  window.addEventListener("scroll", revealOnScroll);
+  revealOnScroll();
+}
+initCardRevealFallback();
 
-let lastX = 0, lastY = 0;
-let lastMove = Date.now();
+/* ================= Mobile menu (with animation) ================= */
+function initMobileMenu() {
+  const menuToggle = document.getElementById("menu-toggle");
+  const navLinks = document.getElementById("nav-links");
+  if (!menuToggle || !navLinks) return;
 
-window.addEventListener('mousemove', e => {
-  const now = Date.now();
-  const speed = Math.min(1, (now - lastMove) / 50);
-  lastMove = now;
-
-  const x = e.clientX;
-  const y = e.clientY;
-
-  const dx = x - lastX;
-  const dy = y - lastY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  // Position smoothing
-  cursor.style.transform = `translate(${x - 12}px, ${y - 12}px) scale(${1 + distance / 150})`;
-
-  // Glow intensity changes with movement speed
-  cursor.style.boxShadow = `0 0 ${15 + distance / 3}px rgba(0,225,255,0.6)`;
-  cursor.style.background = `radial-gradient(circle, rgba(0,225,255,${0.5 + distance / 200}), transparent 70%)`;
-
-  lastX = x;
-  lastY = y;
-});
-// Splash Screen Animation
-window.addEventListener("load", () => {
-  const splash = document.getElementById("splash-screen");
-  setTimeout(() => {
-    splash.style.display = "none";
-  }, 4000); // 4 seconds then fade out
-});
-// Splash Screen Animation
-window.addEventListener("load", () => {
-  const splash = document.getElementById("splash-screen");
-  setTimeout(() => {
-    splash.style.opacity = "0";
-    setTimeout(() => splash.style.display = "none", 800);
-  }, 4000); // stays visible for 4s total
-});
-document.getElementById('contactForm')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const message = document.getElementById('message').value;
-
-  const res = await fetch('/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, message })
+  menuToggle.addEventListener("click", () => {
+    navLinks.classList.toggle("active");
+    menuToggle.textContent = navLinks.classList.contains("active") ? "✖" : "☰";
   });
 
-  const data = await res.json();
-  alert(data.message);
-});
+  navLinks.querySelectorAll("a").forEach((link) =>
+    link.addEventListener("click", () => {
+      navLinks.classList.remove("active");
+      menuToggle.textContent = "☰";
+    })
+  );
+}
+
+/* ================= Futuristic cursor (only on desktop) ================= */
+function initFuturisticCursor() {
+  // Only apply on non-touch devices
+  if ("ontouchstart" in window) return;
+  const cursor = document.createElement("div");
+  cursor.className = "futuristic-cursor";
+  // styles via JS so no CSS edits needed (you can move to stylesheet if desired)
+  Object.assign(cursor.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "25px",
+    height: "25px",
+    borderRadius: "50%",
+    pointerEvents: "none",
+    background: "radial-gradient(circle, rgba(0,225,255,0.7), transparent 70%)",
+    boxShadow: "0 0 30px rgba(0,225,255,0.4)",
+    zIndex: "9999",
+    transition: "transform 0.08s ease-out",
+  });
+  document.body.appendChild(cursor);
+
+  let lastX = 0,
+    lastY = 0,
+    lastMove = Date.now();
+
+  window.addEventListener("mousemove", (e) => {
+    const now = Date.now();
+    const speed = Math.min(1, (now - lastMove) / 50);
+    lastMove = now;
+
+    const x = e.clientX;
+    const y = e.clientY;
+    const dx = x - lastX;
+    const dy = y - lastY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    cursor.style.transform = `translate(${x - 12}px, ${y - 12}px) scale(${1 + distance / 150})`;
+    cursor.style.boxShadow = `0 0 ${15 + distance / 3}px rgba(0,225,255,0.6)`;
+    cursor.style.background = `radial-gradient(circle, rgba(0,225,255,${0.5 + distance / 200}), transparent 70%)`;
+
+    lastX = x;
+    lastY = y;
+  });
+}
