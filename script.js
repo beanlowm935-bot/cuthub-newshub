@@ -435,3 +435,13 @@ function initFuturisticCursor() {
     lastY = y;
   });
 }
+// ===== Responsive Hamburger Menu Toggle =====
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+  });
+}
