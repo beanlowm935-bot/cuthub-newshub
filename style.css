@@ -557,7 +557,8 @@ body.dark-mode div[style*="radial-gradient"] {
 .splash-logo h1 {
   font-size: 3rem;
   background: linear-gradient(90deg, #00bcd4, #007bff);
-  -webkit-background-clip: text;
+background-clip: text;
+-webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 10px rgba(0, 188, 212, 0.6);
   animation: pulseGlow 2s infinite alternate;
@@ -653,7 +654,8 @@ body.dark-mode div[style*="radial-gradient"] {
 .splash-logo h1 {
   font-size: 2.5rem;
   background: linear-gradient(90deg, #00bcd4, #007bff);
-  -webkit-background-clip: text;
+  background-clip: text;
+-webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 20px rgba(0, 188, 212, 0.6);
   animation: pulseGlow 2s infinite alternate;
@@ -919,4 +921,246 @@ body {
 .carousel-controls button:hover {
   background: #0056b3;
 }
+/* ===== Mobile Optimization Fixes ===== */
 
+/* Prevent horizontal overflow on all pages */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Make navbar and other flex sections wrap properly */
+nav, .nav-links, header, section, footer {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+/* Ensure hero and canvas fit screen */
+#hero, #heroCanvas, .hero {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Make carousel responsive */
+.carousel {
+  width: 100%;
+  overflow: hidden;
+}
+.carousel .slide {
+  padding: 1rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+.carousel img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* Fix contact form and inputs */
+form input, form textarea, form button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Adjust spacing and text size on smaller screens */
+@media (max-width: 768px) {
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-text h2 {
+    font-size: 1.2rem;
+    padding: 0 10px;
+    text-align: center;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card {
+    margin: 0 auto;
+    width: 90%;
+  }
+
+  footer {
+    text-align: center;
+    padding: 1rem;
+  }
+}
+/* ===== Responsive Mobile Menu ===== */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #00aaff;
+  transition: transform 0.3s ease;
+}
+
+.menu-toggle:active {
+  transform: scale(0.9);
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.9);
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+
+    /* Animation properties */
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+  }
+
+  .nav-links.active {
+    max-height: 400px; /* adjust depending on number of links */
+    opacity: 1;
+  }
+
+  .nav-links li {
+    margin: 12px 0;
+  }
+
+  .nav-links a {
+    color: #ffffff;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .nav-links a:hover {
+    color: #00aaff;
+  }
+
+  .nav-right {
+    display: none; /* hide search & theme toggle on mobile */
+  }
+}
+/* ===== Carousel Section ===== */
+.carousel-section {
+  position: relative;
+  padding: 60px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #001f33, #003d66);
+  color: #fff;
+  overflow: hidden;
+}
+
+.carousel {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.slide {
+  display: none;
+  padding: 40px 20px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.slide.active {
+  display: block;
+}
+
+.carousel h3 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #00aaff;
+}
+
+.carousel p {
+  font-size: 1rem;
+  max-width: 90%;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.carousel-controls {
+  margin-top: 25px;
+}
+
+.carousel-controls button {
+  background: #00aaff;
+  border: none;
+  color: #fff;
+  padding: 10px 16px;
+  margin: 0 6px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s;
+}
+
+.carousel-controls button:hover {
+  background: #0077cc;
+  transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive Carousel ===== */
+@media (max-width: 768px) {
+  .carousel {
+    width: 90%;
+  }
+
+  .carousel h3 {
+    font-size: 1.4rem;
+  }
+
+  .carousel p {
+    font-size: 0.95rem;
+  }
+
+  .carousel-controls button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel {
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .carousel-section {
+    padding: 40px 10px;
+  }
+
+  .carousel h3 {
+    font-size: 1.2rem;
+  }
+
+  .carousel p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
