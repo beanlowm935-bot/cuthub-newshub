@@ -793,4 +793,130 @@ body {
   from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* === Featured News Section === */
+.featured-news {
+  background: #fdfdfd;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin: 40px auto;
+  max-width: 850px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featured-news:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.featured-news h2 {
+  color: #007BFF;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+}
+
+.featured-news .date {
+  text-align: center;
+  color: #555;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.featured-news .news-image {
+  display: block;
+  margin: 0 auto 25px;
+  border-radius: 12px;
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.featured-news .news-description {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.7;
+  text-align: justify;
+  padding: 0 10px;
+}
+
+/* Animation on scroll (optional if you want smooth fade-in) */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* === Carousel Enhancements === */
+.carousel {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 900px;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.slide {
+  display: none;
+  padding: 25px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: all 0.6s ease;
+}
+
+.slide.active {
+  display: block;
+}
+
+.carousel-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 20px 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.election-slide h3 {
+  color: #007BFF;
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+
+.election-slide p {
+  font-size: 1rem;
+  color: #333;
+  margin: 8px 0;
+}
+
+.election-slide .note {
+  font-weight: 600;
+  color: #d9534f;
+  margin-top: 10px;
+}
+
+.carousel-controls {
+  margin-top: 15px;
+}
+
+.carousel-controls button {
+  background: #007BFF;
+  border: none;
+  color: white;
+  padding: 10px 18px;
+  margin: 0 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.carousel-controls button:hover {
+  background: #0056b3;
+}
 

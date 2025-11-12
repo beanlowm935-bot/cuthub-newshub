@@ -69,26 +69,38 @@
   </section>
 
   <!-- ===== Carousel ===== -->
-  <section class="carousel-section reveal" aria-label="Featured news">
-    <div class="carousel" id="carousel">
-      <div class="slide active">
-        <h3>Welcome Week Highlights</h3>
-        <p>Opening events, orientation guide and campus tours.</p>
-      </div>
-      <div class="slide">
-        <h3>Exam Timetable Released</h3>
-        <p>Check your program timetable and exam regulations.</p>
-      </div>
-      <div class="slide">
-        <h3>Student Council Elections</h3>
-        <p>Meet the candidates and polling locations.</p>
-      </div>
-      <div class="carousel-controls">
-        <button id="prevSlide" aria-label="Previous">◀</button>
-        <button id="nextSlide" aria-label="Next">▶</button>
-      </div>
+  <!-- ===== Carousel ===== -->
+<section class="carousel-section reveal" aria-label="Featured news">
+  <div class="carousel" id="carousel">
+
+    <!-- Slide 1 -->
+    <div class="slide active">
+      <h3>Welcome Week Highlights</h3>
+      <p>Opening events, orientation guide and campus tours.</p>
     </div>
-  </section>
+
+    <!-- Slide 2 -->
+    <div class="slide">
+      <h3>Exam Timetable Released</h3>
+      <p>Check your program timetable and exam regulations.</p>
+    </div>
+
+    <!-- 🗳️ New Slide: Student Council Elections -->
+    <div class="slide election-slide">
+      <h3>🗳️ Student Council Elections Today!</h3>
+      <img src="Student Council Election Poster.png" alt="Student Council Election Poster" class="carousel-image">
+      <p><strong>Venue:</strong> CUT Gym Hall</p>
+      <p>All students are encouraged to come and vote for their preferred candidates.</p>
+      <p class="note">Don’t forget your Student IDs!</p>
+    </div>
+
+    <div class="carousel-controls">
+      <button id="prevSlide" aria-label="Previous">◀</button>
+      <button id="nextSlide" aria-label="Next">▶</button>
+    </div>
+  </div>
+</section>
+
 
   <!-- ===== Info Cards ===== -->
   <section class="cards reveal" id="cardsContainer">
