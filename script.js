@@ -445,3 +445,49 @@ if (hamburger && navLinks) {
     navLinks.classList.toggle('active');
   });
 }
+// ===== Responsive Hamburger Menu Toggle (Frosted Glass) =====
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+
+    // Optional blur effect for body when menu is open
+    document.body.style.overflow = hamburger.classList.contains('active') ? 'hidden' : '';
+  });
+}
+/* ===== Touch Swipe Support for Carousel (Mobile Friendly) ===== */
+(function enableTouchCarousel() {
+  const carousel = document.querySelector('.carousel');
+  const slides = document.querySelectorAll('.slide');
+  if (!carousel || slides.length === 0) return;
+
+  let startX = 0;
+  let endX = 0;
+  const swipeThreshold = 50; // minimum distance to trigger a slide
+
+  carousel.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+
+  carousel.addEventListener('touchmove', e => {
+    endX = e.touches[0].clientX;
+  });
+
+  carousel.addEventListener('touchend', () => {
+    const diff = endX - startX;
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        // swipe right → previous slide
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      } else {
+        // swipe left → next slide
+        currentSlide = (currentSlide + 1) % slides.length;
+      }
+      showSlide(currentSlide);
+      resetAutoSlide();
+    }
+  });
+})();
